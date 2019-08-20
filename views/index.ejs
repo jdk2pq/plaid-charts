@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plaid Charts</title>
+    <link rel="stylesheet" href="https://threads.plaid.com/threads.css">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<main class="main">
+    <div class="grid" id="charts">
+        <div class="grid__column grid__column--is-twelve-columns">
+            <div id="banner" class="everpresent-content">
+                <h1 class="everpresent-content__heading">Working with Plaid and Charts</h1>
+                <p id="intro" class="everpresent-content__subheading">
+                    Based on <a href="https://github.com/plaid/quickstart">Plaid's Quickstart</a>, a data visualization example using <a href="https://dc-js.github.io/dc.js/">DC.js</a> and Plaid's Node API client
+                </p>
+                <br>
+                <% if (!ACCESS_TOKEN) { %>
+                <p>To get started, click the Connect with Plaid button below.</p>
+                <button id="link-btn" class="button button--is-primary">Connect with Plaid</button>
+                <% } %>
+            </div>
+        </div>
+        <hr>
+        <% if (ACCESS_TOKEN) { %>
+
+        <div class="grid__column grid__column--is-three-columns">
+            <div id="amountBarChart">
+                <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
+                    <a href="javascript:resetBarChart();">reset</a>
+                </div>
+            </div>
+        </div>
+        <div class="grid__column grid__column--is-six-columns">
+            <div id="map">
+                <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
+                    <a href="javascript:resetMap();">reset</a>
+                </div>
+            </div>
+        </div>
+        <div class="grid__column grid__column--is-three-columns">
+            <div id="pie">
+                <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
+                    <a href="javascript:resetPie();">reset</a>
+                </div>
+            </div>
+        </div>
+        <div class="grid__column grid__column--is-six-columns center-div">
+            <div id="search"></div>
+            <button id="next" onclick="previous()">Previous</button>
+            <button id="previous" onclick="next()">Next</button>
+            <div id="table" class="table">
+                <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
+                    <a href="javascript:resetTable();">reset</a>
+                </div>
+            </div>
+        </div>
+        <div class="grid__column grid__column--is-six-columns center-div">
+            <div id="line">
+                <div class="reset" style="visibility: hidden;">selected: <span class="filter"></span>
+                    <a href="javascript:resetTable();">reset</a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+        <% if (!ACCESS_TOKEN) { %>
+        <div id="information" class="grid__column grid__column--is-six-columns center-div">
+            <p>Success! Copy the following to the .<%= PLAID_ENV %>.env file:</p>
+<pre>
+ACCESS_TOKEN=<span id="access_token"></span>
+ITEM_ID=<span id="item_id"></span>
+</pre>
+            <p>and restart the application.</p>
+        </div>
+        <% } %>
+    </div>
+    </div>
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script>
+  var products = '<%= PLAID_PRODUCTS %>'.split(',');
+  if (products.includes('assets')) {
+    $('#assets').show();
+  }
+
+  var handler = Plaid.create({
+    apiVersion: 'v2',
+    clientName: 'Plaid Quickstart',
+    env: '<%= PLAID_ENV %>',
+    product: products,
+    key: '<%= PLAID_PUBLIC_KEY %>',
+    countryCodes: '<%= PLAID_COUNTRY_CODES %>'.split(','),
+    // webhook: 'https://your-domain.tld/plaid-webhook',
+    onSuccess: function(public_token) {
+      $.post('/get_access_token', {
+        public_token: public_token
+      }, function(data) {
+          $('#access_token').text(data.access_token);
+          $('#item_id').text(data.item_id);
+          $('#information').fadeIn('fast');
+      });
+    },
+  });
+  var accessToken = qs('access_token');
+  if (accessToken != null && accessToken != '') {
+    $.post('/set_access_token', {
+      access_token: accessToken
+    }, function(data) {
+      $('#container').fadeOut('fast', function() {
+        $('#item_id').text(data.item_id);
+        $('#access_token').text(accessToken);
+        $('#intro').hide();
+        $('#app, #steps').fadeIn('slow');
+      });
+    });
+  }
+
+  function qs(key) {
+    key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+    var match = location.search.match(new RegExp("[?&]"+key+"=([^&]+)(&|$)"));
+    return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+  }
+
+  function displayError(element, error) {
+    var html = `
+    <div class="alert alert-danger">
+      <p><strong>Error Code:</strong> ${error.error_code}</p>
+      <p><strong>Error Type:</strong> ${error.error_type}</p>
+      <p><strong>Error Message:</strong> ${error.display_message == null ? error.error_message : error.display_message}</p>
+      <div>Check out our <a href="https://plaid.com/docs/#errors-overview">errors documentation</a> for more information.</div>
+    </div>`;
+    $(element).html(html).slideDown();
+  }
+
+</script>
+<script src="plaid.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.7/d3.min.js" integrity="sha256-D+2/goqcjnuoryb9A0rifuH0rBYS9hKOzNqG91JhAVc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js" integrity="sha256-T9tvV3x+/vCnCoFciKNZwbaJ46q9lh6iZjD0ZjD95lE=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/3.1.1/dc.css" integrity="sha256-AqNj0S7N1lVLHuYiA9ydJqGXI/9NMQOCGf40m1iyQI0=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/3.1.1/dc.js" integrity="sha256-YMDxuFYolxev9HssASkUkDzBdOpfGXUHOgWCqWNTd+8=" crossorigin="anonymous"></script>
+<script src="bundle.js"></script>
+</body>
+</html>
