@@ -1,5 +1,7 @@
 # Plaid Charts
 
+![Plaid Charts](charts.png)
+
 An example webapp that pulls data from Plaid's API and visualizes it, using [dc.js](https://dc-js.github.io/dc.js/) and based on [Plaid's Quickstart app](https://github.com/plaid/quickstart/tree/master/node).
 
 ## Running locally
