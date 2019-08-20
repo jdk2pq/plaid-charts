@@ -11,7 +11,7 @@ These instructions will run a `sandbox` instance, allowing you to use fake crede
 
 To run locally:
 
-    git clone repo
+    git clone git@github.com:jdk2pq/plaid-charts.git
     cd plaid-charts
     vim .sandbox.env
     
@@ -32,7 +32,7 @@ These instructions will run a `development` instance, allowing you to use live c
 
 To run locally:
 
-    git clone repo
+    git clone git@github.com:jdk2pq/plaid-charts.git
     cd plaid-charts
     vim .development.env
     
