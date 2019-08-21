@@ -35,6 +35,7 @@ To run locally:
 
     git clone git@github.com:jdk2pq/plaid-charts.git
     cd plaid-charts
+    yarn # or npm install
     vim .development.env
     
     # Add the following to your .development.env file:
