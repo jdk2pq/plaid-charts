@@ -13,6 +13,7 @@ To run locally:
 
     git clone git@github.com:jdk2pq/plaid-charts.git
     cd plaid-charts
+    yarn # or npm install
     vim .sandbox.env
     
     # Add the following to your .sandbox.env file:
@@ -25,7 +26,7 @@ To run locally:
  
     # Save the file, and then run
     
-    yarn start # or npm run start
+    yarn start:sandbox # or npm run start:sandbox
      
 ### Development
 These instructions will run a `development` instance, allowing you to use live credentials. 

@@ -5,16 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "start": "yarn start:sandbox",
-    "start:sandbox": "concurrently \"yarn webpack -w\" \"PLAID_ENV=sandbox node index.js\"",
-    "start:development": "concurrently \"yarn webpack -w\" \"PLAID_ENV=development node index.js\""
+    "start:sandbox": "concurrently \"webpack -w\" \"PLAID_ENV=sandbox node index.js\"",
+    "start:development": "concurrently \"webpack -w\" \"PLAID_ENV=development node index.js\""
   },
   "author": "Jake Kenneally",
   "license": "ISC",
-  "engines": {
-    "node": ">=4.4.7",
-    "yarn": ">=1.0.0"
-  },
   "dependencies": {
     "body-parser": "1.18.x",
     "crossfilter": "^1.3.12",
